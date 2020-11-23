@@ -6,6 +6,32 @@ Several tools and pipelines exist for RNA-Seq data analysis. Different consortiu
 
 In this repo, we document RNA-seq data analysis following this [guidelines](https://h3abionet.github.io/H3ABionet-SOPs/RNA-Seq) developed by H3ABioNet. Data used in this project is available [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/)
 
+## Setup
+Create conda environment
+
+    $ conda create --name [environ_name]
+    
+Activate conda environment
+
+    $ conda activate [environ_name]
+    
+Install tools
+
+    $ conda install [toolname] -c bioconda
+
+## Tools:
+
+| Tool name    |  Version        |   Use       |
+|------|-----------|------------------------|
+|  Fastqc            |      v0.11.9           |    Check the quality of the reads          |
+|  Trimmomatic            |    v0.39             |    Trim adapter remnants and low quality reads          |
+ 
+
+
+
+
+
+
 ## Workflow:
 **Phase 1**
 - [x] Download raw reads
