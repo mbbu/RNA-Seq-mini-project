@@ -25,6 +25,7 @@ Install tools
 |------|-----------|------------------------|
 |  Fastqc            |      v0.11.9           |    Check the quality of the reads          |
 |  Trimmomatic            |    v0.39             |    Trim adapter remnants and low quality reads          |
+|                        |                       |                                                        |
  
 
 
