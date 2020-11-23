@@ -7,15 +7,24 @@ Several tools and pipelines exist for RNA-Seq data analysis. Different consortiu
 In this repo, we document RNA-seq data analysis following this [guidelines](https://h3abionet.github.io/H3ABionet-SOPs/RNA-Seq) developed by H3ABioNet. Data used in this project is available [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/)
 
 ## Workflow:
+**Phase 1**
+- [x] Download raw reads
+- [x] Quality check of the raw reads
+- [x] Adapter removal and quality trimming
+- [x] Quality recheck
 
-1. [ ] Download raw reads
-2. [ ] Quality check of the raw reads
-3. [ ] Adapter removal and quality trimming
-4. [ ] Quality recheck
-5. [ ] Alignment
-6. [ ] Trascripts/gene counts
-7. [ ] Collect and tabulate statistics
-8. [ ] Statistical analysis 
+
+
+**Phase 2**
+- [ ] Alignment
+- [ ] Trascripts/gene counts
+- [ ] Collect and tabulate statistics
+
+
+
+**Phase 3**
+- [ ] Statistical analysis:
     - [ ] QC check
     - [ ] Outlier removal and normalization
     - [ ] Differential expression
+
