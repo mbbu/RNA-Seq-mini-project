@@ -25,4 +25,12 @@ done
 
 fastqc -o  ../quality_reports/quality_recheck_reports *_paired.fastq
 
+# perform pseudo-alignment and generate gene counts using kallisto
+
+for sample in *R1_paired.fastq*
+do
+	R2=${sample//_R1_paired.fastq/_R2_paired.fastq}
+	kallisto quant -i ../Kallisto/kallisto_index -b 30 -o ./  ${sample} $R2
+done
+
 
