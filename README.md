@@ -52,8 +52,8 @@ Install tools
 
 | Tool name    |  Version        |   Use       |
 |------|-----------|------------------------|
-|  Fastqc            |      v0.11.9           |    Check the quality of the reads          |
-|  Trimmomatic            |    v0.39             |    Trim adapter remnants and low quality reads          |
+|  [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)            |      v0.11.9           |    Check the quality of the reads          |
+|  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)            |    v0.39             |    Trim adapter remnants and low quality reads          |
 |                        |                       |                                                        |
  
 
