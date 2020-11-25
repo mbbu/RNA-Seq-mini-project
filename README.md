@@ -72,14 +72,14 @@ Install tools
 
 
 **Phase 2**
-- [ ] Alignment
-- [ ] Trascripts/gene counts
-- [ ] Collect and tabulate statistics
+- [x] Alignment
+- [x] Trascripts/gene counts
+- [x] Collect and tabulate statistics
 
 
 
 **Phase 3**
-- [ ] Statistical analysis:
+- [x] Statistical analysis:
     - [ ] QC check
     - [ ] Outlier removal and normalization
     - [ ] Differential expression
