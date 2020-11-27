@@ -25,7 +25,7 @@ do
 	R1_unpaired=${R1//.fastq/_unpaired.fastq}
 	R2_paired=${R2//.fastq/_paired.fastq}
 	R2_unpaired=${R2//.fastq/_unpaired.fastq}
-	trimmomatic PE $R1 $R2 $R1_paired $R1_unpaired $R2_paired $R2_unpaired -summary summary.txt -trimlog logfile SLIDINGWINDOW:4:20 MINLEN:20 ILLUMINCACLIP:NexteraPE-PE.fa:2:40:15 
+	trimmomatic PE $R1 $R2 $R1_paired $R1_unpaired $R2_paired $R2_unpaired -summary summary.txt -trimlog logfile SLIDINGWINDOW:4:20 MINLEN:20 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15 
 done
 ```
 Perform quality recheck after trimming using fastqc
@@ -45,7 +45,7 @@ kallisto index -i kallisto_index Homo_sapiens.GRCh38.cdna.abinitio.fa.gz
 for sample in *R1_paired.fastq*
 do
 	R2=${sample//_R1_paired.fastq/_R2_paired.fastq}
-	kallisto quant -i ../Kallisto/kallisto_index -b 30 -o ./  ${sample} $R2
+	kallisto quant -i kallisto_index -b 30 -o ./  ${sample} $R2
 done
 
 ```
