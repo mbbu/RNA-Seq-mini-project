@@ -27,6 +27,11 @@ fastqc -o  ../quality_reports/quality_recheck_reports *_paired.fastq
 
 # perform pseudo-alignment and generate gene counts using kallisto
 
+# create a kallisto index
+
+kallisto index  -i kallisto_index Homo_sapiens.GRCh38.cdna.abinitio.fa.gz
+
+#now run kallisto
 for sample in *R1_paired.fastq*
 do
 	R2=${sample//_R1_paired.fastq/_R2_paired.fastq}
