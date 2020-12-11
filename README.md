@@ -64,6 +64,7 @@ Install tools
 |tximport| To import abundance.h5 file|
 |pheatmap|  To draw clustered heatmaps |
 |RcolorBrewer| Contains a ready-to-use color palettes for creating heatmaps|
+|tximportData| Provides output of running Kallisto|
 
 
 
