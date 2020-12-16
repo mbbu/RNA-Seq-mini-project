@@ -1,0 +1,282 @@
+---
+title: "RNA-Seq-Analysis"
+author: "Fred Kebaso | Margaret Chifwete | Lmelias Luke"
+date: "12/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Differential Gene Expression Analysis**
+
+First Import sample metadata. The levels of samples are re-ordered so that the level specified by ref is first and the others are moved down. This is useful for control-treatment contrasts which take the first level as the reference.
+
+```{r}
+metadata <- read.csv('practice.dataset.metadata.csv', sep = '\t', header = T, stringsAsFactors = T)
+
+metadata
+
+# setting reference level to 'normal'
+
+metadata$Condition <- relevel(metadata$Condition, ref = 'normal')
+
+```
+
+Import Kallisto directory containing sample abundances using tximportData. This package provides the output of kallisto.
+
+```{r}
+library(tximportData) 
+
+dir <- ("~/Desktop/kallisto_results")
+list.files(dir) #list directories file paths to see whether you imported the right one
+```
+
+Import the abundances for each sample using tximport package. This package imports transcript-level abundance(TPM), estimated counts and transcript lengths, and summarizes into matrices for use with downstream gene-level analysis packages. Average transcript length, weighted by sample-specific transcript abundance estimates, is provided as a matrix which can be used as an offset for different expression of gene-level counts.
+
+```{r}
+library(rhdf5) # needed to read abundance.h5
+
+library(tximport) 
+
+files <- file.path(dir, metadata$SampleID, "abundance.h5")
+names(files) <- metadata$SampleID
+head(files) 
+txi.kallisto <- tximport(files, type = "kallisto", txOut = TRUE)
+```
+
+Use head() to see Kallisto counts imported by tximport
+
+```{r}
+head(txi.kallisto$counts)
+```
+
+Use nrow() to see the number of rows in Kallisto counts
+
+```{r}
+nrow(txi.kallisto$counts)
+```
+
+
+
+**Import DESeq library**
+```{r}
+library(DESeq2)
+```
+
+
+## **Create DeseqDataSet Using DESeq library.**
+
+DeseqDataSet is an object class used by the DESeq2 package to store the read counts and the intermediate estimated quantities during statistical analysis is the DESeqDataSet, which will usually be represented in the code here as an object dds
+
+To create a dds object, you need abundance file (txi.kallisto), a table of sample information(metadata) and the design that indicates how to model the sample.
+
+The design formula expresses the variables which will be used in modeling. The formula should be a tilde (~) followed by the variables with plus signs between them (if you are comparing more than one variables). The design can be changed later, however then all differential analysis steps should be repeated, as the design formula is used to estimate the dispersions and to estimate the log2 fold changes of the model.
+
+```{r}
+dds <- DESeqDataSetFromTximport(txi.kallisto, metadata, ~ Condition)
+```
+
+DESeq() is used to perform internal normalization where geometric mean is calculated for gene across all samples. The counts for each gene in each sample is then divided by this mean, the median of this ratio in a sample is the size factor for that sample.
+
+This procedure corrects for library size and RNA composition bias which can arise for example when only a small number of genes are very highly expressed in one experiment condition but not in the other.
+
+It automatically detects and counts outliers using cooks distance and removes this genes from analysis.
+
+
+```{r}
+dds <- DESeq(dds)
+```
+
+Use head() to view dds 
+
+```{r}
+head(dds)
+```
+
+Check the number of rows in dds
+
+```{r}
+nrow(dds)
+```
+
+Remove rows that have no significant expression information: This reduces the size of our dds object and increases the speed of functions.
+
+```{r}
+dds_result <- rowSums(counts(dds)) >= 1
+
+dds <- dds[dds_result,] #By assigning the results back to the dds object we are filling in the slots of the DESeqDataSet object with the appropriate information.
+
+```
+
+Now View dds object again
+```{r}
+head(dds)
+```
+
+Recheck the number of rows
+```{r}
+nrow(dds)
+```
+
+## **Data Transformation**
+
+Most statistical methods for exploratory analysis work best for homoskedastic data (variance is approximately same across different means). 
+
+For RNA-seq counts expected variance grows with mean which necessitates data transformation.
+
+The transformation is useful when checking for outliers or as input for machine learning techniques such as clustering or linear discriminant analysis.
+
+### **1. Variance Stabilizing Transformation**
+
+Standard statistical techniques often assume that data are normally distributed, with constant variance not depending on the mean of the data. Data that violate these assumptions can often be brought in line with using variance stabilizing transformation.
+
+Argument 'blind', logical, whether to blind the transformation to the experimental design.
+
+When blind = TRUE, the transformation is unbiased by prior information on samples, 
+
+If blind = FALSE, the transformation is biased on the prior information on sample e.g condition, this is useful for transforming data for downstream analysis.
+
+Assay is a piece of dds object that contains actual counts minus metadata.
+
+```{r}
+vsd <- vst(dds, blind = FALSE)
+head(assay(vsd), 3)
+```
+
+### **2. Regularized Logarithm**
+
+This function transforms the count data to the log2 scale in a way which minimizes differences between samples for rows with small counts, and which normalizes with respect to library size. The rlog transformation produces a similar variance stabilizing effect as variance Stabilizing Transformation.
+```{r}
+rld <- rlog(dds, blind = FALSE)
+head(assay(rld), 3)
+```
+
+## **Examine the effects of transformation**
+
+Here we use meanSDplot()-plots row standard deviations(y-axis) versus row means(x-axis) to see the effect of transformation.
+
+### **1. Before transformation**
+```{r}
+library(vsn)
+untransformed_dds <- normTransform(dds)
+meanSdPlot(assay(untransformed_dds))
+
+```
+
+### **2. After vst Transformation**
+```{r}
+meanSdPlot(assay(vsd))
+
+```
+
+### **3. After rld transformation**
+```{r}
+meanSdPlot(assay(rld))
+
+```
+
+## **Heat maps:**
+
+A heat map is a graphical representation of data where values are depicted by color. Heatmaps are commonly used to visualize RNA-Seq results. They are useful for visualizing the expression of genes across the sample.
+
+In heat maps the data is displayed in a grid where each row represents a gene and each column represents a sample. The colour and intensity of the boxes is used to represent changes (not absolute values) of gene expression. In our case, red represents up-regulated genes and blue represents down-regulated genes.
+
+
+```{r}
+library(pheatmap)
+library(RColorBrewer)
+row_means <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:20]
+
+data_frame <- as.data.frame(colData(dds))
+
+qc_pheatmap_plot <- pheatmap(assay(vsd)[row_means,], cluster_rows = FALSE, show_rownames = TRUE, cluster_cols = FALSE, annotation_col = data_frame)
+
+```
+## **Sample Distance**
+
+Distance matrix are useful in assessing overall similarity between samples. 
+dist() is used to calculate the Euclidean distance between samples, t() is used to transpose the data matrix. We need this because dist() calculates distances between data rows and our samples constitute the columns.
+
+Sample-to-sample distances can be visualised using Heatmap plot or PCA plot.
+
+### **(i) Calculate distances between samples**
+```{r}
+sample_distance <- dist(t(assay(vsd)))
+```
+
+### **(ii) Convert the sample distances into a matrix**
+```{r}
+sample_distance_matrix <- as.matrix(sample_distance)
+rownames(sample_distance_matrix) <- vsd$Condition # Assign row names to conditions
+colnames(sample_distance_matrix) <- metadata$SampleID # Assign column names to SampleID
+head(sample_distance_matrix) #View the matrix
+
+```
+
+### **(iii) Generate a distance heatmap**
+```{r}
+colors <- colorRampPalette(rev(brewer.pal(9, 'Reds'))) (255)
+distance_pheatmap_plot <- pheatmap(sample_distance_matrix, clustering_distance_rows = sample_distance, clustering_distance_cols = sample_distance, col = colors)
+
+distance_pheatmap_plot
+```
+
+
+### **Generate PCA plots.**
+
+plotPCA() is a DESeq2 function used to generate PCA plots, intgroup argument tells the function to use it to choose colours.
+```{r}
+pca_plot <- plotPCA(vsd, intgroup = "Condition") 
+
+pca_plot
+```
+
+## **Dispersion plot.**
+
+In DESeq2, variability within group is quantified as dispersion. The function plotDispEsts() visualizes DESeq2’s dispersion estimates.
+
+The black points are the dispersion estimates for each gene as obtained by considering the information from each gene separately. The red trend line is fitted to show dispersion dependence on mean and then each gene’s estimate is shrunk towards the red line to obtain the final estimates (blue points) that are then used in the hypothesis test.
+
+The blue circles are genes which have high gene-wise dispersion estimates which are labeled as dispersion outliers. These estimates are therefore not shrunk toward the fitted trend line.
+
+
+
+```{r}
+plotDispEsts(dds, main = "Dispersion Plot")
+```
+
+### **MA plot**
+
+The MA-plot represents each gene with a dot. In DESeq2, the function plotMA shows the log2 fold changes attributable to a given variable over the mean of normalized counts for all the samples in the DESeqDataSet. Points will be colored if the adjusted p value is less than 0.1. Points which fall out of the threshold are plotted as open triangles pointing either up or down.
+
+The x-axis is the average expression over all samples, 
+
+the y-axis is the log2 fold change of normalized counts by size factor between normal and diseased samples.
+```{r}
+plotMA(dds, main = "MA Plot")
+```
+
+### **Log fold change shrinkage.**
+
+It is more useful to visualize the MA-plot for the shrunken log2 fold changes, which remove the noise associated with log2 fold changes from low count genes without requiring arbitrary filtering thresholds.
+
+
+
+Obtain the coefficient to use for shrinkage
+```{r}
+resultsNames(dds)
+```
+
+Plot log fold change shrinkage
+```{r}
+#library(apeglm)
+shrunk <- lfcShrink(dds, coef = "Condition_disease_vs_normal")
+plotMA(shrunk)
+```
+```{r}
+sessionInfo()
+```
+
+
