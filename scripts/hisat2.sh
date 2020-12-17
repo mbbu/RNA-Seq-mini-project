@@ -1,4 +1,5 @@
 #! usr/bin/bash
+set -e
 
 #unzip the file to be indexed
 
