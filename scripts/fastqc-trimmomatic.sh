@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 set -e
-mkdir RNA_Seq_Analysis
+mkdir -p RNA_Seq_Analysis
 cd RNA_Seq_Analysis
 #download the reads and metadata
 sample_id=$'sample37\nsample38\nsample39\nsample40\nsample41\nsample42'
@@ -16,12 +16,12 @@ wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.m
 #Quality check the raw reads using fastqc
 
 # First create the directory where quality reports will be directed
-mkdir quality_reports
-mkdir quality_recheck_reports  #reports generated after sequence trimming will be saved in this directory
+mkdir -p quality_reports
+mkdir -p quality_recheck_reports  #reports generated after sequence trimming will be saved in this directory
 
 fastqc -o quality_reports *.fastq.gz #fastqc command
 
-mkdir trimmomatic_result
+mkdir -p trimmomatic_result
 
 # Trim reads with low quality and remove adapters if present using trimmomatic
  
