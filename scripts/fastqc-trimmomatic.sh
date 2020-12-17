@@ -1,4 +1,5 @@
 #! /usr/bin/bash
+set -e
 mkdir RNA_Seq_Analysis
 cd RNA_Seq_Analysis
 #download the reads and metadata
