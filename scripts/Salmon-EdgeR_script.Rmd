@@ -1,0 +1,208 @@
+---
+title: "comparison script"
+author: MARGARET|LUKE|FREDRICK
+date: "12/16/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+EdgeR analysis
+After obtaining your quantification reads you proceed to the analysis of your reads using R
+```{r}
+library("edgeR") 
+library(tximport) #import counts using tximport
+```
+import our metadata
+
+```{r}
+metadata <- read.table("./practice.dataset.metadata.csv",sep = '\t', header = T, stringsAsFactors = T)
+metadata
+```
+provide the reference level of the metadata 
+```{r}
+metadata$Condition <- relevel(metadata$Condition, ref = 'normal')
+```
+locate the directory containg our salmon counts("quants.sf")
+```{r}
+dir <- ("~/Desktop/Mini-project/salmonanalysis/hpc/mini-project/unziiped-raw-data/quants")
+list.files(dir) #lists the directories to our counts files from salmon
+files <- file.path(dir, metadata$SampleID, "quant.sf") #creates the path to our counts and their respective samples
+files
+names(files) <- metadata$SampleID #renames the paths to their respective sample id
+head(files)
+
+library(tximport)
+
+txi.salmon <- tximport(files, type = "salmon", txOut = TRUE) #import our counts data
+nrow(txi.salmon$counts)
+
+```
+
+Constructing DGEList object
+edgeR works on a table of integer read counts, with rows corresponding to genes and columns to independent libraries. edgeR stores data in a simple list-based data object called a DGEList. This type of object is easy to use because it can be manipulated like any list in R. You can make this in R by specifying the counts and the groups in the function DGEList().
+```{r}
+library("edgeR")
+dobject <- DGEList(txi.salmon$counts, group = metadata$SampleID)
+dim(dobject)
+```
+Filtering results
+From a statistical point of view, genes with consistently low counts are very unlikely to be assessed as significantly DE because low counts do not provide enough statistical evidence for a reliable judgement to be made. Such genes can therefore be removed from the analysis without any loss of information.Removing these genes means that we have ultimately have fewer tests to perform, thereby redu
+Here, we retain only those genes that are represented at least 1cpm reads in at least two samples (cpm=counts per million) 
+
+```{r}
+dobjectcopy <- dobject # keep the old one in case we mess up
+
+countsPerMillion <- cpm(dobject)
+summary(countsPerMillion)
+
+countCheck <- countsPerMillion 
+
+keep <- which(rowSums(countCheck) >= 1)
+
+dobject <- dobject[keep,]
+summary(cpm(dobject))
+
+nrow(dobject)
+
+```
+Normalization
+It is important to normalize RNA-seq both within and between samples. 
+EdgeR implements the trimmed mean of M-values (TMM) method.
+Log2 aids in calculating fold change, which measures the up-regulated vs down-regulated genes between samples. Usually, Log2 measures data more close to the biologically-detectable changes.
+
+```{r}
+dobject <- calcNormFactors(dobject, method="TMM")
+
+
+nrow((dobject))
+```
+
+Data Exploration
+In the MDS plot, the distance between each pair of samples can be interpreted as the leading log-fold change between the samples for the genes that best distinguish that pair of samples. By default, leading fold-change is defined as the root-mean-square of the largest 500 log2-fold changes between that pair of samples. The plot below  shows that samples from the same group cluster together while samples from different groups are well separated. In other words, differences between groups are much larger than those within groups, meaning that there are likely to be statistically significant differences between the groups. 
+
+```{r}
+plotMDS(dobject)
+mtext("In the MDS plot, the distance between each pair of samples can  be interpreted as the leading \n log-fold change between the samples for the genes that best distinguish that pair of samples")
+```
+Setting up the Model
+We are now ready to set up the model! We first need to specify our design matrix, which describes the setup of the experiment
+Design matrices help GLMs understand how to compare groups of your data. It answers the question, “How did you design your study? What are the groups of your observations?”
+
+```{r}
+group <- factor(metadata$Condition)
+group
+
+
+design <- model.matrix( ~0 + group ) #~0+groups, this tells the model matrix function how to format your matrix. There are other ways of making model matrices, this is the most intuitive for using edgeR.
+design
+head(design)
+dim(design)
+```
+With the DGEList object, edgeR can estimate the dispersion of the data to best model it. EdgeR’s underlying negative binomial distribution requires this estimate of dispersion as part of the model. For the GLM, this estimate is done in three steps.
+
+```{r}
+dobject <- estimateGLMCommonDisp(dobject, design)
+
+dobject <- estimateGLMTrendedDisp(dobject, design)
+dobject <- estimateGLMTagwiseDisp(dobject, design)
+plotBCV(dobject)
+```
+
+
+
+
+The GLM generalizes linear regression by allowing the linear model to be related to the response variable via a link function and by allowing the magnitude of the variance of each measurement to be a function of its predicted value.
+
+First fit the data to the count model before making contrasts of interest.
+```{r}
+fit <- glmFit(dobject, design)
+```
+We can use the glmLRT() function with the makeContrasts() function to make any of those DE tests or contrasts.
+```{r}
+contrastnormdisease <- glmLRT( fit, contrast=makeContrasts( groupnormal-groupdisease, levels=design ) )
+
+```
+Once your test is made you can access the top expressed genes by using the toptags() function. The parameter n can be used to access the top “n” genes in the contrastnormdisease.
+```{r}
+
+
+```
+PlotSmear produces a type of mean-difference plot (or MA plot) with a special representation (smearing) of log-ratios that are infinite. plotSmear resolves the problem of plotting genes that have a total count of zero for one of the groups by adding the 'smear' of points at low A value. The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups. The smear is created by using random uniform numbers of width smearWidth to the left of the minimum A. plotSmear also allows easy highlighting of differentially expressed (DE) genes.
+Even better, one can access the top genes based on a particular measure, say BH FDR < 0.1 using the decideTestsDGE function. Here we look at the top genes in contrast with a BH FDR < 0.1 and plot them with a “Smear” plot, equivalent to a microarray MA plot. (Typically FDR of 0.1 means that there is a chance that 10% of the genes are not false positive i.e. if 100 genes are called DEGs then about 10 genes are false positive)
+```{r}
+dt_significant <- decideTestsDGE( contrastnormdisease, adjust.method="BH", p.value=0.05)#p-value of 5% means that 5% of all tests will result in false positives.
+vctr_names_sig <- rownames( dobject )[ as.logical( dt_significant )]
+plotSmear( contrastnormdisease, de.tags = vctr_names_sig )
+abline( h = c( -2.0, 2.0 ), col = "blue")
+
+```
+Another view of the data is using a heatmap that has been hierarchically clustered. This gives you a global view of the samples and how they relate (in the sample dendrogram) but also highlights genes that may be driving the differences between sample groups. 
+
+```{r}
+vctr_names_top <- rownames( topTags( contrastnormdisease, n = 10 ) )
+vctr_names_top <- c( vctr_names_top, rownames( topTags( contrastnormdisease, n = 10 ) ) )
+vctr_names_top <- unique( c( vctr_names_top, rownames( topTags( contrastnormdisease, n = 10 ) ) ))
+
+
+vctr_sig <- as.logical( decideTestsDGE( contrastnormdisease, adjust.method="BH", p.value=0.000005) )
+vctr_sig <- vctr_sig | as.logical( decideTestsDGE( contrastnormdisease, adjust.method="BH", p.value=0.000005) )
+vctr_sig <- vctr_sig | as.logical( decideTestsDGE( contrastnormdisease, adjust.method="BH", p.value=0.000005) )
+vctr_names_hcl <- rownames( dobject )[ vctr_sig ]
+length( vctr_names_hcl )
+
+```
+Now we perform hierarchical clustering to visualize samples and genes as groups. Functions for heatmaps and clustering are very flexible allowing many distance metrics. 
+
+Matrix of values
+```{r}
+mtrx_significant <- dobject$counts[ vctr_names_top, ]
+```
+Colors for the samples
+```{r}
+vctr_colors = as.factor (c("black", "red", "green", "yellow", "blue", "violet"))
+vctr_colors
+vctr_sample_colors <- as.character( vctr_colors[ as.numeric( dobject$samples$group ) ] )
+vctr_sample_colors
+```
+Heatmap
+```{r}
+heatmap( log2( mtrx_significant +1 ),  ColSideColors=vctr_sample_colors, col=heat.colors(100), scale="row")
+```
+```{r}
+pseudoCounts <- log2(dobject$counts+1)
+
+```
+
+```{r}
+avalues <- (pseudoCounts[,1] + pseudoCounts[,2]) + pseudoCounts[,3]/3
+mvalues <- (pseudoCounts[,1] - pseudoCounts[,2]) - pseudoCounts[,3]
+plot(avalues, mvalues, xlab="M", ylab="A", pch=20, main="Normal")
+abline( h=0, col="red")
+
+
+avalues <- (pseudoCounts[,4] + pseudoCounts[,5]) + pseudoCounts[,6]/3
+mvalues <- (pseudoCounts[,4] - pseudoCounts[,5]) - pseudoCounts[,6]
+plot(avalues, mvalues, xlab="M", ylab="A", pch=19, main="Diseased")
+abline(h=0, col="red")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

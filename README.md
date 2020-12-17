@@ -54,9 +54,17 @@ Install tools
 |------|-----------|------------------------|
 |  [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)            |      0.11.9           |    Check the quality of the reads          |
 |  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)            |    0.39             |    Trim adapter remnants and low quality reads          |
-| [Kallisto]( https://pachterlab.github.io/kallisto/)                   |  0.46.2                     |      pseudo-alignment and gene counts                                                  |
- 
+| [Kallisto]( https://pachterlab.github.io/kallisto/)                   |  0.46.2                     |      pseudo-alignment and gene counts                      
 
+**R-Analysis**                            
+ |  Package           | Use|
+  |--------------------|----|
+  |DESeq2| To analyse count data and test for differential expression.|
+|rhdf5 | To read abundance.h5 file |
+|tximport| To import abundance.h5 file|
+|pheatmap|  To draw clustered heatmaps |
+|RcolorBrewer| Contains a ready-to-use color palettes for creating heatmaps|
+|tximportData| Provides output of running Kallisto|
 
 
 
@@ -72,15 +80,20 @@ Install tools
 
 
 **Phase 2**
-- [ ] Alignment
-- [ ] Trascripts/gene counts
-- [ ] Collect and tabulate statistics
+- [x] Alignment
+- [x] Trascripts/gene counts
+- [x] Collect and tabulate statistics
 
 
 
 **Phase 3**
-- [ ] Statistical analysis:
-    - [ ] QC check
-    - [ ] Outlier removal and normalization
-    - [ ] Differential expression
+- [x] Statistical analysis:
+    - [x]  QC check
+    - [x]  Outlier removal and normalization
+    - [x]  Differential expression
 
+**How to use the provided scripts for analysis**
+
+*Salmon related scripts*
+
+- Put all your raw data(reads), metadata and reference genome in one file. All the outputs are directed to the same file but in different sub-directories. For EdgeR analysis, run the script from the main file. 

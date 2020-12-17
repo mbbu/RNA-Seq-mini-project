@@ -1,0 +1,168 @@
+---
+title: "Hisat_featurecounts_Deseq"
+author: "Fred Kebaso | Margaret Chifwete | Lmelias Luke"
+date: "12/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+metadata <- read.csv('practice.dataset.metadata.tsv', sep = '\t', header = T, stringsAsFactors = T, row.names = 1)
+
+metadata
+
+# setting reference level to 'normal'
+
+metadata$Condition <- relevel(metadata$Condition, ref = 'normal')
+
+```
+
+
+```{r}
+hisat_counts <- read.csv("~/Desktop/feature_Counts/counts.txt", sep="\t", header=T, row.names=1, comment.char = "#")
+
+head(hisat_counts)
+colnames(hisat_counts)
+```
+Change column name to sample id
+```{r}
+colnames(hisat_counts) <- gsub("_hisat_sorted.bam", "", colnames(hisat_counts))
+colnames(hisat_counts) <- gsub("..hisat.", "", colnames(hisat_counts))
+colnames(hisat_counts)
+```
+
+
+```{r}
+hisat_counts[c("Chr", "Start", "End", "Strand", "Length")] <- NULL
+all(rownames(metadata) %in% colnames(hisat_counts))
+all(colnames(hisat_counts) == rownames(metadata))
+#hisat_counts <- hisat_counts[, rownames(metadata[1,])]
+#all(rownames(metadata) %in% colnames(hisat_counts))
+
+#match(rownames(metadata), colnames(hisat_counts))
+#matched_counts <- match(rownames(metadata), colnames(hisat_counts))
+#reordered_metaData <- metadata[matched_counts,]
+#View(reordered_metaData)
+
+#all(rownames(reordered_metaData) == colnames(hisat_counts))
+colnames(hisat_counts)
+metadata
+```
+
+Create a dds
+```{r}
+library(DESeq2)
+dds <- DESeqDataSetFromMatrix(countData = hisat_counts,
+                              colData = metadata,
+                              design = ~ Condition)
+dds
+nrow(dds)
+
+```
+```{r}
+dds <- DESeq(dds)
+```
+```{r}
+head(dds)
+```
+```{r}
+nrow(dds)
+```
+```{r}
+dds_result <- rowSums(counts(dds)) >= 1
+
+dds <- dds[dds_result,] #By assigning the results back to the dds object we are filling in the slots of the DESeqDataSet object with the appropriate information.
+
+nrow(dds)
+```
+```{r}
+vsd <- vst(dds, blind = FALSE)
+head(assay(vsd), 3)
+```
+
+```{r}
+rld <- rlog(dds, blind = FALSE)
+head(assay(rld), 3)
+```
+non-transformed
+```{r}
+library(vsn)
+untransformed_dds <- normTransform(dds)
+meanSdPlot(assay(untransformed_dds))
+
+```
+Vst transformed
+```{r}
+meanSdPlot(assay(vsd))
+
+```
+
+rld transformed
+```{r}
+meanSdPlot(assay(rld))
+
+```
+
+QC Pheatmap 
+
+```{r}
+library(pheatmap)
+library(RColorBrewer)
+row_means <- order(rowMeans(counts(dds, normalized = TRUE)), decreasing = TRUE)[1:20]
+
+data_frame <- as.data.frame(colData(dds))
+
+qc_pheatmap_plot <- pheatmap(assay(vsd)[row_means,], cluster_rows = FALSE, show_rownames = TRUE, cluster_cols = FALSE, annotation_col = data_frame)
+
+```
+Sample Distances
+```{r}
+sample_distance <- dist(t(assay(vsd)))
+```
+
+Sample distance matrix
+```{r}
+sample_distance_matrix <- as.matrix(sample_distance)
+rownames(sample_distance_matrix) <- vsd$Condition # Assign row names to conditions
+colnames(sample_distance_matrix) <- rownames(metadata) # Assign column names to SampleID
+head(sample_distance_matrix) #View the matrix
+
+```
+sample-sample distance pheatmap
+```{r}
+library(RColorBrewer)
+colors <- colorRampPalette(rev(brewer.pal(9, 'Reds'))) (255)
+distance_pheatmap_plot <- pheatmap(sample_distance_matrix, clustering_distance_rows = sample_distance, clustering_distance_cols = sample_distance, col = colors)
+
+distance_pheatmap_plot
+```
+plotPCA() is a DESeq2 function used to generate PCA plots, intgroup argument tells the function to use it to choose colours.
+```{r}
+pca_plot <- plotPCA(vsd, intgroup = "Condition") 
+
+pca_plot
+```
+Dispersion plot
+```{r}
+plotDispEsts(dds, main = "Dispersion Plot")
+```
+MA plot
+
+```{r}
+plotMA(dds, main = "MA Plot")
+```
+
+```{r}
+resultsNames(dds)
+```
+```{r}
+#library(apeglm)
+shrunk <- lfcShrink(dds, coef = "Condition_disease_vs_normal")
+plotMA(shrunk)
+```
+
+
+

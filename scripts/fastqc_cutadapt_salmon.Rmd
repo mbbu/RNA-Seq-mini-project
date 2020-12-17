@@ -1,0 +1,66 @@
+---
+title: "fastqc/cutadapt/salmon_quants script"
+author: "innocent"
+date: "12/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+create  a directory where your reports will be stored
+```{bash}
+
+mkdir qualityreports
+```
+checking quality of the raw reads using fastqc
+```{bash}
+fastqc -o ./qualityreports *.fastq
+```
+
+Trimming adapters from your sequences depending on the quality as assessed from above
+
+```{bash}
+mkdir cutadaptresults
+
+for file in *_R2.fastq
+do
+    
+    file2=${file/_R2.fastq/_R1.fastq} # replace _R1.fastq in the file name with _R2.fastq
+    out1=./cutadaptresults/${file}
+    out2=${out1/_R2.fastq/_R1.fastq}
+    cutadapt -m 20 -u  13 -o ${out1} -p ${out2}  ${file} ${file2}
+done
+```
+After trimming do a quality re-check before proceeding to the next steps, 
+Quality re-check
+
+```{bash}
+mkdir quality-re-check
+fastqc -o ./quality-re-check ./cutadaptresults/*.fastq
+```
+
+Quantification of the reads using salmon quantification tool
+```{bash}
+mkdir quants
+```
+salmon  requires an index to do pseudo alignment. The index is made from your reference genome
+```{bash}
+salmon index -t gencode.v36.transcripts.fa -i salmo_index
+
+```
+salmon loop
+```{bash}
+
+for file in *_R2.fastq
+do  
+    samp=${file//_R2.fastq/_R1.fastq}
+    echo "Processing ${file}"
+    salmon quant -i salmo_index -l A \
+         -1 ${file}\
+         -2 ${samp}\
+         -p 2 --validateMappings -o ./quants/${file//_R2.fastq/} 
+done
+```
