@@ -88,9 +88,9 @@ Install tools
 
 **Phase 3**
 - [x] Statistical analysis:
-    - [ ] QC check
-    - [ ] Outlier removal and normalization
-    - [ ] Differential expression
+    - [x]  QC check
+    - [x]  Outlier removal and normalization
+    - [x]  Differential expression
 
 **How to use the provided scripts for analysis**
 
