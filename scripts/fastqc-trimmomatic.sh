@@ -11,7 +11,8 @@ do
 done
 
 wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.metadata.tsv
-Quality check the raw reads using fastqc
+
+#Quality check the raw reads using fastqc
 
 # First create the directory where quality reports will be directed
 mkdir quality_reports
