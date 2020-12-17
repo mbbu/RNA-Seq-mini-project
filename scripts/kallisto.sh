@@ -1,11 +1,13 @@
+#! usr/bin/bash
+
 # create a kallisto index
-#wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz
+wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz
 
 
 kallisto index gencode.v36.transcripts.fa.gz -i ./kallisto_index
 
 
-#mkdir kallisto_results
+mkdir kallisto_results
 #now run kallisto
 for sample in ./trimmomatic_result/*R1_paired.fastq.gz*
 do
