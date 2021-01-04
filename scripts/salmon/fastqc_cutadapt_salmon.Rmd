@@ -1,8 +1,6 @@
 ---
 title: "fastqc/cutadapt/salmon_quants script"
-author: "innocent"
-date: "12/8/2020"
-output: html_document
+author: "MARGARET|LUKE|KEBASO
 ---
 
 ```{r setup, include=FALSE}
@@ -46,11 +44,23 @@ Quantification of the reads using salmon quantification tool
 ```{bash}
 mkdir quants
 ```
-salmon  requires an index to do pseudo alignment. The index is made from your reference genome
+salmon  requires a decoy aware transcriptome index when performing quantification in mapping based mode . 
+Salmon indexing requires the names of the genome targets, which is extractable by using the grep command.
 ```{bash}
-salmon index -t gencode.v36.transcripts.fa -i salmo_index
-
+grep "^>" <(gunzip -c Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz) | cut -d " " -f 1 > decoys.txt
+sed -i.bak -e 's/>//g' decoys.txt
 ```
+Along with the list of decoys salmon also needs the concatenated transcriptome and genome reference file for index. 
+The genome targets (decoys) should come after the transcriptome targets in the reference
+
+```{bash}
+cat gencode.v36.transcripts.fa.gz Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz > congentra.fa.gz
+```
+BUilding the index 
+```{bash}
+salmon index -t congentra.fa.gz -d decoys.txt -p 12 -i salmon_index --gencode
+```
+--gencode flag is for removing extra metdata in the target header separated by | from the gencode reference. 
 salmon loop
 ```{bash}
 
@@ -58,7 +68,7 @@ for file in *_R2.fastq
 do  
     samp=${file//_R2.fastq/_R1.fastq}
     echo "Processing ${file}"
-    salmon quant -i salmo_index -l A \
+    salmon quant -i salmon_index -l A \
          -1 ${file}\
          -2 ${samp}\
          -p 2 --validateMappings -o ./quants/${file//_R2.fastq/} 
