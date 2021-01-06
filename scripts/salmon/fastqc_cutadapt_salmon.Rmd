@@ -29,7 +29,7 @@ do
     file2=${file/_R2.fastq/_R1.fastq} # replace _R1.fastq in the file name with _R2.fastq
     out1=./cutadaptresults/${file}
     out2=${out1/_R2.fastq/_R1.fastq}
-    cutadapt -m 20 -u  13 -o ${out1} -p ${out2}  ${file} ${file2}
+    cutadapt -m 20 -u 15 -q 25 -o ${out1} -p ${out2}  ${file} ${file2}
 done
 ```
 After trimming do a quality re-check before proceeding to the next steps, 
