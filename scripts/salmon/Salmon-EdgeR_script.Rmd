@@ -1,11 +1,6 @@
 ---
-title: "comparison script"
+title: "Salmon-EdgeR analysis script"
 author: MARGARET|LUKE|FREDRICK
-date: "12/16/2020"
-output:
-  html_document: default
-  pdf_document: default
----
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
