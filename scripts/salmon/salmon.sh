@@ -8,8 +8,7 @@ set -e
 
 mkdir quants
 
-#salmon  requires a decoy aware transcriptome index when performing quantification in mapping based mode . 
-#Salmon indexing requires the names of the genome targets, which is extractable by using the grep command.
+# salmon  requires a decoy aware transcriptome index when performing quantification in mapping based mode. The decoy file contains the names of the genome targets, which is extractable by using the grep command.
 
 grep "^>" <(gunzip -c Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz) | cut -d " " -f 1 > decoys.txt
 sed -i.bak -e 's/>//g' decoys.txt
@@ -32,7 +31,7 @@ do
     salmon quant -i salmon_index -l A \
          -1 ${file}\
          -2 ${samp}\
-         -p 2 --validateMappings -o ./quants/${file//_R2.fastq.gz/} 
+         -p 2 --validateMappings -o ./quants/${file//_R2.fastq.gz/} #--validateMappings-Enables selective alignment of the sequencing reads when mapping them to the transcriptome. 
 done
 
 
