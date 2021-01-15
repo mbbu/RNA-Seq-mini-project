@@ -1,0 +1,19 @@
+sample,tools,percentage_after_trimming
+sample 37,Trimmomatic,85.40
+sample 37,Trim_galore,99.89
+sample 37,cut_adapt,99.64
+sample 38,Trimmomatic,90.1
+sample 38,Trim_galore,99.96
+sample 38,cut_adapt,99.64
+sample 39,Trimmomatic,91.73
+sample 39,Trim_galore,99.95
+sample 39,cut_adapt,99.56
+sample 40,Trimmomatic,96.68
+sample 40,Trim_galore,99.96
+sample 40,cut_adapt,99.55
+sample 41,Trimmomatic,96.28
+sample 41,Trim_galore,99.96
+sample 41,cut_adapt,99.55
+sample 42,Trimmomatic,95.72
+sample 42,Trim_galore,99.95
+sample 42,cut_adapt,99.48

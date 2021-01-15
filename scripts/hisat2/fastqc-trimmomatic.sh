@@ -1,8 +1,13 @@
 #! /usr/bin/bash
+
 set -e
+
 mkdir -p RNA_Seq_Analysis
+
 cd RNA_Seq_Analysis
+
 #download the reads and metadata
+
 sample_id=$'sample37\nsample38\nsample39\nsample40\nsample41\nsample42'
 for sample in `echo "$sample_id"`
 do
@@ -11,7 +16,8 @@ do
 
 done
 
-wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.metadata.tsv
+
+wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.metadata.tsv # downloading metadata.
 
 #Quality check the raw reads using fastqc
 
@@ -42,8 +48,6 @@ fastqc -o  ./quality_recheck_reports trimmomatic_result/*_paired.fastq.gz
 # pseudo-alignment and generate gene counts using kallisto
 
 
-time bash kallisto.sh
+time bash kallisto.sh # run kallisto to obtain transcript level counts.
 
-# Perform alignment using hisat2 and gerenate counts using feature counts
 
-#time bash hisat2.sh

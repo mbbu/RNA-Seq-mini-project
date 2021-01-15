@@ -9,6 +9,108 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Phase I: Preprocessing
+
+### Downloading Raw Data
+
+The reads were available from the H3ABioNet guidelines.
+We downloaded our reads  and metadata from [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/). 
+
+We used the commonand shown below to download raw reads.
+```{bash}
+#sample_id=$'sample37\nsample38\nsample39\nsample40\nsample41\nsample42'
+#for sample in `echo "$sample_id"`
+#do
+  #wget -c http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/${sample}_R1.fastq.gz
+	#wget -c http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/${sample}_R2.fastq.gz
+
+#done
+
+#wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.metadata.tsv
+
+```
+
+```{bash}
+#sample_id=$'sample37\nsample38\nsample39\nsample40\nsample41\nsample42'
+#for sample in `echo "$sample_id"`
+#do
+  #wget -c http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/${sample}_R1.fastq.gz
+	#wget -c http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/${sample}_R2.fastq.gz
+
+#done
+
+#wget http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/practice.dataset.metadata.tsv
+
+```
+###*Quality control check*
+This step is important in obtaining good quality reads for downstream processes.
+Here we used fastqc tool. FastQC provides a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing techniques. 
+Fastqc command
+```{bash}
+#fastqc -o (output directory) (input file/directory)
+```
+
+###*Adapter removal and quality trimming*
+This  cleans up the data and reduces noise in the overall analysis.
+It involves:
+ 1. Removal of Adaptors - Adaptors (glossary term) are artificial pieces of DNA introduced prior to sequencing to ensure that the DNA fragment being sequenced attaches to the sequencing flow cell. Usually these adaptors get sequenced, and have already been removed from the reads. But sometimes bits of adaptors are left behind, anywhere from 90% to 20% of the adaptor length. These need to be removed from the reads. The adaptor sequence for this step will have to be obtained from the same source as the sequence data.
+  2. Removal of low quality reads - The quality of bases sequenced tends to drop off toward one end of the read. A low quality base call means that the nucleotide assigned has a higher probability of being incorrect.We used a quality of 20.(any base with a quality score below 20 was dropped)
+  3. Removal of very short reads - Once the adaptor remnants and low quality ends have been trimmed, some reads may end up being very short. These short reads are likely to align to multiple (wrong) locations on the reference, introducing noise. Hence any reads that are shorter than a predetermined cutoff (we used 20) needs to be removed.
+The following command was used:
+```{bash}
+#for R1 in *R1* 
+#do
+#	R1_paired=${R1//.fastq.gz/_paired.fastq.gz}
+#	R1_unpaired=${R1//.fastq.gz/_unpaired.fastq.gz}
+#	R2_paired=${R2//.fastq.gz/_paired.fastq.gz}
+#	R2_unpaired=${R2//.fastq.gz/_unpaired.fastq.gz}
+#	trimmomatic PE $R1 $R2 ./trimmomatic_result/$R1_paired ./trimmomatic_result/$R1_unpaired ./trimmomatic_result/$R2_paired #./trimmomatic_result/$R2_unpaired SLIDINGWINDOW:4:20 MINLEN:25 ILLUMINACLIP:NexteraPE-PE.fa:2:40:15 HEADCROP:10 
+#done
+```
+Alternative Tools: Trim_galore, Cut-adapt
+Trim-galore takes quite sometime ( for our case it took ............hours) and with limited options in trimming sequences for example has no head crop option.
+cut-adapt is as good as trimmomatic but one must be sure of the adapters used by the sequencer.
+
+### *Quality Recheck*
+After trimming, it is good to make sure that your dataset looks better by rerunning Fastqc on the trimmed data. You need  to compare between trimmed and raw fastq data.
+We used the following commmand:
+```{bash}
+# fastqc -o  ./quality_recheck_reports *_paired.fastq.gz
+```
+
+#Phase II (Gene Expression Analysis )
+The phase entails:
+- Alignment
+- Obtaining Trascripts/gene counts
+- Collecting and tabulating statistics.
+Tools used include: Kallisto, Salmon and Hisat2.
+It adopts two approaches: 1. Alignment based approach
+                          2. Pseudo alignment -based methods
+kallisto is based on the novel idea of pseudoalignment for rapidly determining the compatibility of reads with targets, without the need for alignment.Pseudoalignment of reads preserves the key information needed for quantification, and kallisto is therefore not only fast, but also as accurate as existing quantification tools.
+Salmon is a tool for wicked-fast transcript quantification from RNA-seq data.Salmon uses the same approach as kallisto in quantifying reads. 
+Hisat2 uses  alignment based approach  which involves alignment of the reads to the reference genome first and then generating the read counts.
+
+For kallisto we used the command below:
+```{bash}
+# create a kallisto index
+#wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz  # download reference #sequence 
+
+
+#kallisto index gencode.v36.transcripts.fa.gz -i ./kallisto_index
+
+
+#mkdir -p kallisto_results
+#now run kallisto
+#for sample in ./trimmomatic_result/*R1_paired.fastq.gz*
+#do
+	#output=${sample//_R1_paired.fastq.gz/ }
+	#R2=${sample//_R1_paired.fastq.gz/_R2_paired.fastq.gz}
+	#kallisto quant -i kallisto_index -b 100 -o ./kallisto_results/$output ./trimmomatic_result/${sample} ./trimmomatic_result/$R2
+#done
+```
+
+
+
 # **Differential Gene Expression Analysis**
 
 First Import sample metadata. The levels of samples are re-ordered so that the level specified by ref is first and the others are moved down. This is useful for control-treatment contrasts which take the first level as the reference.

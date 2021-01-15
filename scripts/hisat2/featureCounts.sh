@@ -1,7 +1,7 @@
 #! usr/bin/bash
 set -e
 
-# Download gtf file
+# Download and unzip gtf file
 wget ftp://ftp.ensembl.org/pub/release-102/gtf/homo_sapiens/Homo_sapiens.GRCh38.102.gtf.gz
 gunzip Homo_sapiens.GRCh38.102.gtf.gz
 

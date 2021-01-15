@@ -1,7 +1,7 @@
 #! usr/bin/bash
 set -e
 
-#unzip the file to be indexed
+# Download and unzip the file to be indexed
 
 wget ftp://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 
@@ -13,9 +13,11 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 hisat2-build -f Homo_sapiens.GRCh38.dna.primary_assembly.fa Homo_sapiens.GRCh38.dna.primary_assembly.fa.idx
 
 #make a directory to save the index
+
 mkdir -p hisat_index 
 mv *.ht2 ./hisat_index
 mkdir -p hisat
+
 # Run hisat2 allignment
 cd trimmomatic_result
 for R1 in *R1_paired.fastq.gz*
@@ -36,5 +38,7 @@ do
 	rm $hisat_output
 
 done
+
+
 cd ../
-bash featureCounts.sh
+bash featureCounts.sh # run featurecounts to obtain the counts.
