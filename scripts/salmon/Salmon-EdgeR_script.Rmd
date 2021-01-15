@@ -127,8 +127,7 @@ Once your test is made you can access the top expressed genes by using the topta
 
 
 ```
-PlotSmear produces a type of mean-difference plot (or MA plot) with a special representation (smearing) of log-ratios that are infinite. plotSmear resolves the problem of plotting genes that have a total count of zero for one of the groups by adding the 'smear' of points at low A value. The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups. The smear is created by using random uniform numbers of width smearWidth to the left of the minimum A. plotSmear also allows easy highlighting of differentially expressed (DE) genes.
-Even better, one can access the top genes based on a particular measure, say BH FDR < 0.1 using the decideTestsDGE function. Here we look at the top genes in contrast with a BH FDR < 0.1 and plot them with a “Smear” plot, equivalent to a microarray MA plot. (Typically FDR of 0.1 means that there is a chance that 10% of the genes are not false positive i.e. if 100 genes are called DEGs then about 10 genes are false positive)
+PlotSmear produces a type of mean-difference plot (or MA plot) with a special representation (smearing) of log-ratios that are infinite. Here we look at the top genes in contrast with a BH FDR < 0.05 and plot them with a “Smear” plot, equivalent to a microarray MA plot. 
 ```{r}
 dt_significant <- decideTestsDGE( contrastnormdisease, adjust.method="BH", p.value=0.05)#p-value of 5% means that 5% of all tests will result in false positives.
 vctr_names_sig <- rownames( dobject )[ as.logical( dt_significant )]
