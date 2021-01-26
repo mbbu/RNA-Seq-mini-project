@@ -115,7 +115,7 @@ The scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/m
 
 **Data**
 
-Raw data/reads from the sequencer, Metadata(Downloaded from [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/dataset/), Reference genome,downloaded  
+Raw data/reads from the sequencer, Metadata(Downloaded from [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/)), Reference genome,downloaded  
 [here](http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz) and the [Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz](http://ftp.ensembl.org/pub/release-102/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz) 
  in one directory as the scripts.
 
@@ -135,8 +135,41 @@ Involves Alignment of reads, Gene counts and Tabulating of the statistics, the s
 
 **Phase III (Statistical analysis/Differential Expression)**
 
-EdgeR package was used for normalization, statistical analysis and visualization of the gene counts using this [Salmon-EdgeR_script.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/Salmon-EdgeR_script.Rmd) script.
-The generated html document for the EdgeR can be assesed [here](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/EdgeR%20Analysis_script.html)
+EdgeR package was used for normalization, statistical analysis and visualization of the gene counts using this [EdgeR_Analysis_script.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/EdgeR_Analysis_script.Rmd) script.
+The generated html document for the EdgeR can be assesed [here](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/EdgeR%20Analysis_script.html).
+
+**Kallisto Pipeline**
+
+The scripts can be accessed from this repo or [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/kallisto).
+
+**Data**
+
+The code for downloading the required data is included in the scripts, since the data is huge it takes time to download the data. Incase you've already downloaded your data as from above then you can hash out the download codes from the scripts or if you wish to obtain raw data separately then use the below links.
+
+Raw data reads and metadata can be downloaded from [here](http://h3data.cbio.uct.ac.za/assessments/RNASeq/practice/) incase you didn't download them from above pipelines. Reference genome can also be downloaded from [here](http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz).
+
+**Phase I (Pre-processing)**
+
+Quality control check was done using fastqc tool which informed the data cleaning parameters in the next step.
+Data cleaning involves , removal of adapter remnants, short reads and low quality bases. Trimmomatic  trimming tool was preffered in this pipeline. 
+
+Quality-recheck after trimming is necessary to examine the extent to which your data was cleaned.This was also done using Fastqc.
+
+The combined script for Fastqc and Trimmomatic with details are in [fastqc-trimmomatic.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/kallisto/fastqc-trimmomatic.sh) script.
+
+
+**Phase II (Gene Expression Analysis)**
+
+Involves Alignment of reads, Gene counts and Tabulating of the statistics, the script [kallisto.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/kallisto/kallisto.sh) was used to achieve this.
+
+**Phase III (Statistical analysis/Differential Expression)**
+
+DESeq2 package was used for normalization, statistical analysis and visualization of the gene counts using this [kallisto_Deseq_analysis.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/kallisto/kallisto_Deseq_analysis.Rmd) script.
+
+
+The generated html document for the DESeq2 can be assesed [here](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/kallisto/kallisto_Deseq_analysis.html)
+
+
 
 
 The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
