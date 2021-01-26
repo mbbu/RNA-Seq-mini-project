@@ -94,36 +94,23 @@ Install tools
 
 **How to use the provided scripts for analysis**
 
-*Salmon related scripts*
+**Hisat pipeline**
 
-**How to use the provided scripts for analysis**
+-The documents are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
 
-**Salmon pipeline scripts**
+-First, put your raw reads and metadata in one file.In case of HPC make sure you ```module load``` all the tools required for this pipeline.
+You will begin with checking the quality of your reads using [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).Here you will get the information on which reads to trim or not. Those that require trimming to remove low quality reads and reads that have a shorter length than your preffered length 
+will proceed for trimming using  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This was done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/fastqc-trimmomatic.sh)
 
-**Data**
+-Allignment of the reads requires a reference genome that will used to create an index to be used for the allignment. Using the command ```wget``` you can obtain the fasta file in relation to your reads and use hisat2 in creation of indeces and proceed for allignment of the reads.This was done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
 
-Raw data/reads from the sequencer, Metadata(Downloaded from above), Reference genome,downloaded  
-[here](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz) and the 
-[Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz](ftp://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz)
- in one directory as the scripts.
+-When using HISAT2 the counts are obtained using a different tool.  In this pipeline, we used *features count* to count the reads that alligned to the indexes created from the reference genome.The counts were done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/featureCounts.sh)
 
+-The counts obtained from featuresCount were used for statistical analysis in R using DESeq2. The statistical analysis done are contained in the [DESeq2 Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/Features_R-analysis.Rmd).
 
-**Phase I (Pre-processing)**
-
-Quality control check was done using this, [fastqc_quality_check.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/fastqc_quality_check.sh) script.
-
-Data cleaning involves , removal of adapter remnants, short reads and low quality bases. Cutadapt trimming tool was preffered and the script [cutadapt.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/cutadapt.sh) was used.
-
-Quality-recheck after trimming is necessary to examine the extent to which your data was cleaned and this was achieved using [fastqc_quality_recheck.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/fastqc_quality_recheck.sh) script.
-
-
-**Phase II (Gene Expression Analysis)**
-
-Involves Alignment of reads, Gene counts and Tabulating of the statistics, the script [salmon.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/salmon.sh) was used.
-
-**Phase III (Statistical analysis/Differential Expression)**
-
-EdgeR package was used for normalization, statistical analysis and visualization of the gene counts using this [Salmon-EdgeR_script.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/Salmon-EdgeR_script.Rmd) script.
 
 
 The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
+
+
+
