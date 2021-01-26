@@ -171,8 +171,10 @@ The generated html document for the DESeq2 can be assesed [here](https://github.
 
 
 
+**Conclusion**
 
-The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
+
+The final  analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
 
 
 
