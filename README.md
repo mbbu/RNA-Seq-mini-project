@@ -17,7 +17,7 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
   - Adapter removal and quality trimming
   - Quality recheck
 
-**Phase II (Gene Expression Analysis ),  Time: 2 Days.**
+**Phase II (Gene Expression Analysis ),  Time: 3 Weeks.**
 
  Generate gene/transcript level counts 
 
@@ -27,14 +27,18 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
  - Generate estimated counts using pseudo-alignment approach
  - Collecting and tabulating alignment stats
 
-**Phase III (R - Analysis ),  Time: 4 Days**
+**Phase III (R - Analysis ),  Time: 2 weeks**
 
  - QC and outlier removal / Batch detection.
  - Answer general questions of the project
  - wrap-up
+**Report Genaration(1 week) **
+
+- Comparison of outputs from each tool in each processing step
 
 
 ## Setup
+
 
 Create conda environment
 
@@ -48,7 +52,9 @@ Install tools
 
     $ conda install [toolname] -c bioconda
 
+
 ## Tools:
+
 
 | Tool name    |  Version        |   Use       |
 |------|-----------|------------------------|
@@ -56,7 +62,8 @@ Install tools
 |  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)            |    0.39             |    Trim adapter remnants and low quality reads          |
 | [Kallisto]( https://pachterlab.github.io/kallisto/)                   |  0.46.2                     |      pseudo-alignment and gene counts                      
 
-**R-Analysis**                            
+**R-Analysis**
+
  |  Package           | Use|
   |--------------------|----|
   |DESeq2| To analyse count data and test for differential expression.|
@@ -71,6 +78,7 @@ Install tools
 
 
 ## Workflow:
+
 **Phase 1**
 - [x] Download raw reads
 - [x] Quality check of the raw reads
@@ -91,27 +99,30 @@ Install tools
     - [x]  QC check
     - [x]  Outlier removal and normalization
     - [x]  Differential expression
+    
 
 **How to use the provided scripts for analysis**
 
+
 **Hisat pipeline**
 
--The documents are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
 
--First, put your raw reads and metadata in one file.In case of HPC make sure you ```module load``` all the tools required for this pipeline.
+- The documents are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
+
+- First, put your raw reads and metadata in one file.In case of HPC make sure you ```module load``` all the tools required for this pipeline.
 You will begin with checking the quality of your reads using [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).Here you will get the information on which reads to trim or not. Those that require trimming to remove low quality reads and reads that have a shorter length than your preffered length 
 will proceed for trimming using  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic). This was done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/fastqc-trimmomatic.sh)
 
--Allignment of the reads requires a reference genome that will used to create an index to be used for the allignment. Using the command ```wget``` you can obtain the fasta file in relation to your reads and use hisat2 in creation of indeces and proceed for allignment of the reads.This was done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
+- Allignment of the reads requires a reference genome that will used to create an index to be used for the allignment. Using the command ```wget``` you can obtain the fasta file in relation to your reads and use hisat2 in creation of indeces and proceed for allignment of the reads.This was done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/hisat2)
 
--When using HISAT2 the counts are obtained using a different tool.  In this pipeline, we used *features count* to count the reads that alligned to the indexes created from the reference genome.The counts were done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/featureCounts.sh)
+- When using HISAT2 the counts are obtained using a different tool.  In this pipeline, we used *features count* to count the reads that alligned to the indexes     created from the reference genome.The counts were done using this [script](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/featureCounts.sh)
 
--The counts obtained from featuresCount were used for statistical analysis in R using DESeq2. The statistical analysis done are contained in the [DESeq2 Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/Features_R-analysis.Rmd).
+- The counts obtained from featuresCount were used for statistical analysis in R using DESeq2. The statistical analysis done are contained in the [DESeq2 Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/Features_R-analysis.Rmd).
 
 
 **Salmon Pipeline Scripts**
 
-The scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/salmon)
+The scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/salmon).
 
 **Data**
 
