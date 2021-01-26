@@ -111,7 +111,7 @@ will proceed for trimming using  [Trimmomatic](http://www.usadellab.org/cms/?pag
 
 **Salmon Pipeline Scripts**
 
-They scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/salmon)
+The scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/salmon)
 
 **Data**
 
