@@ -96,6 +96,34 @@ Install tools
 
 *Salmon related scripts*
 
-- Put all your raw data(reads), metadata and reference genome in one file. All the outputs are directed to the same file but in different sub-directories. For EdgeR analysis, run the script from the main file. 
+**How to use the provided scripts for analysis**
+
+**Salmon pipeline scripts**
+
+**Data**
+
+Raw data/reads from the sequencer, Metadata(Downloaded from above), Reference genome,downloaded  
+[here](ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_36/gencode.v36.transcripts.fa.gz) and the 
+[Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz](ftp://ftp.ensembl.org/pub/release-100/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz)
+ in one directory as the scripts.
+
+
+**Phase I (Pre-processing)**
+
+Quality control check was done using this, [fastqc_quality_check.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/fastqc_quality_check.sh) script.
+
+Data cleaning involves , removal of adapter remnants, short reads and low quality bases. Cutadapt trimming tool was preffered and the script [cutadapt.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/cutadapt.sh) was used.
+
+Quality-recheck after trimming is necessary to examine the extent to which your data was cleaned and this was achieved using [fastqc_quality_recheck.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/fastqc_quality_recheck.sh) script.
+
+
+**Phase II (Gene Expression Analysis)**
+
+Involves Alignment of reads, Gene counts and Tabulating of the statistics, the script [salmon.sh](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/salmon.sh) was used.
+
+**Phase III (Statistical analysis/Differential Expression)**
+
+EdgeR package was used for normalization, statistical analysis and visualization of the gene counts using this [Salmon-EdgeR_script.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/Salmon-EdgeR_script.Rmd) script.
+
 
 The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
