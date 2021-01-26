@@ -136,6 +136,7 @@ Involves Alignment of reads, Gene counts and Tabulating of the statistics, the s
 **Phase III (Statistical analysis/Differential Expression)**
 
 EdgeR package was used for normalization, statistical analysis and visualization of the gene counts using this [Salmon-EdgeR_script.Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/Salmon-EdgeR_script.Rmd) script.
+The generated html document for the EdgeR can be assesed [here](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/salmon/EdgeR%20Analysis_script.html)
 
 
 The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
