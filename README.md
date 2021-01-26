@@ -97,3 +97,5 @@ Install tools
 *Salmon related scripts*
 
 - Put all your raw data(reads), metadata and reference genome in one file. All the outputs are directed to the same file but in different sub-directories. For EdgeR analysis, run the script from the main file. 
+
+The final report analysis report is available [here](https://mbbu.github.io/RNA-Seq-mini-project/reports/Rnaseq--mini-project-report--1-.html)
