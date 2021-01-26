@@ -10,7 +10,7 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
 
 **Phase I (Pre-processing analysis),  Time: 1 week.**
 
- *Tools : fastqc - 01109 , Trimmomatic - 0.39v*
+ *Tools : fastqc - v01109 , Trimmomatic - 0.39v, Cut-adapt - v2.8*
 
   - Download raw reads
   - Check quality of the raw reads
@@ -21,7 +21,8 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
 
  Generate gene/transcript level counts 
 
- *Tool - kallisto*
+ *Tool - kallisto- v0.46.2, -salmon v0.12.0, Hisat v2.1.0, feature counts - v2.0.0*
+
   
  - Align reads to reference genome 
  - Generate estimated counts using pseudo-alignment approach
@@ -29,12 +30,15 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
 
 **Phase III (R - Analysis ),  Time: 2 weeks**
 
+*Tool - DESeq2 v3.12 , EdgeR V3.12
+
  - QC and outlier removal / Batch detection.
  - Answer general questions of the project
  - wrap-up
+ 
 **Report Genaration(1 week) **
 
-- Comparison of outputs from each tool in each processing step
+- Comparison of outputs from each tool in each processing step.
 
 
 ## Setup
