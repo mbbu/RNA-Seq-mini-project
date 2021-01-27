@@ -30,13 +30,13 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
 
 **Phase III (R - Analysis ),  Time: 2 weeks**
 
-*Tool - DESeq2 v3.12 , EdgeR V3.12*
+*Tool - DESeq2 v3.12 , EdgeR V3.12
 
  - QC and outlier removal / Batch detection.
  - Answer general questions of the project
  - wrap-up
  
-**Report Genaration(1 week)**
+**Report Genaration(1 week) **
 
 - Comparison of outputs from each tool in each processing step.
 
@@ -64,7 +64,10 @@ Install tools
 |------|-----------|------------------------|
 |  [Fastqc](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)            |      0.11.9           |    Check the quality of the reads          |
 |  [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic)            |    0.39             |    Trim adapter remnants and low quality reads          |
-| [Kallisto]( https://pachterlab.github.io/kallisto/)                   |  0.46.2                     |      pseudo-alignment and gene counts                      
+| [Kallisto]( https://pachterlab.github.io/kallisto/)                   |  0.46.2                     |      pseudo-alignment and gene counts                     | [Hisat](http://daehwankimlab.github.io/hisat2/)                                                  | 2.1.0  | Alignment of reads on genome reference  |
+|  [FeatureCounts](http://subread.sourceforge.net/)                                                        | 2.0.0 | Perform gene counts |
+|  [Salmon](https://combine-lab.github.io/salmon/getting_started/)                                         | 0.12.0 | Pseudo-alignment  and gene counts |
+|  [cutadapt](https://cutadapt.readthedocs.io/en/stable/)                                                    | 2.8 | Trim adapter remnants and low quality reads |
 
 **R-Analysis**
 
