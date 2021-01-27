@@ -30,13 +30,13 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
 
 **Phase III (R - Analysis ),  Time: 2 weeks**
 
-*Tool - DESeq2 v3.12 , EdgeR V3.12
+*Tool - DESeq2 v3.12 , EdgeR V3.12*
 
  - QC and outlier removal / Batch detection.
  - Answer general questions of the project
  - wrap-up
  
-**Report Genaration(1 week) **
+**Report Genaration(1 week)**
 
 - Comparison of outputs from each tool in each processing step.
 
