@@ -127,7 +127,7 @@ will proceed for trimming using  [Trimmomatic](http://www.usadellab.org/cms/?pag
 - The counts obtained from featuresCount were used for statistical analysis in R using DESeq2. The statistical analysis done are contained in the [DESeq2 Rmd](https://github.com/mbbu/RNA-Seq-mini-project/blob/main/scripts/hisat2/Features_R-analysis.Rmd).
 
 
-**Salmon Pipeline Scripts**
+**Salmon Pipeline**
 
 The scripts are found [here](https://github.com/mbbu/RNA-Seq-mini-project/tree/main/scripts/salmon).
 
