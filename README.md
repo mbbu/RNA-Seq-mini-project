@@ -36,7 +36,7 @@ In this repo, we document RNA-seq data analysis following this [guidelines](http
  - Answer general questions of the project
  - wrap-up
  
-**Report Genaration(1 week) **
+**Report Genaration(1 week)**
 
 - Comparison of outputs from each tool in each processing step.
 
